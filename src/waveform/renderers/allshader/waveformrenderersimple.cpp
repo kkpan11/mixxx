@@ -13,12 +13,10 @@ WaveformRendererSimple::WaveformRendererSimple(
         : WaveformRendererSignalBase(waveformWidget) {
 }
 
-void WaveformRendererSimple::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererSimple::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererSimple::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
     m_shader.init();
 }
 
@@ -73,7 +71,8 @@ void WaveformRendererSimple::paintGL() {
     const float heightFactor = allGain * halfBreadth / m_maxValue;
 
     // Effective visual frame for x, which we will increment for each pixel advanced
-    double xVisualFrame = firstVisualFrame;
+    double xVisualFrame = qRound(firstVisualFrame / visualIncrementPerPixel) *
+            visualIncrementPerPixel;
 
     const int numVerticesPerLine = 6; // 2 triangles
 
@@ -120,9 +119,6 @@ void WaveformRendererSimple::paintGL() {
             for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
                 const WaveformData& waveformData = data[i];
                 const float filteredAll = static_cast<float>(waveformData.filtered.all);
-                // Uncomment to undo scaling with pow(value, 2.0f * 0.316f) done
-                // in analyzerwaveform.h const float filteredAll =
-                // unscale(waveformData.filtered.all);
 
                 max[chn] = math_max(max[chn], filteredAll);
             }

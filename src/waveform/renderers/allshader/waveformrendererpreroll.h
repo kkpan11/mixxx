@@ -4,8 +4,10 @@
 #include <QImage>
 #include <memory>
 
+#include "rendergraph/openglnode.h"
 #include "shaders/patternshader.h"
 #include "util/class.h"
+#include "util/opengltexture2d.h"
 #include "waveform/renderers/allshader/vertexdata.h"
 #include "waveform/renderers/allshader/waveformrenderer.h"
 
@@ -17,12 +19,17 @@ namespace allshader {
 class WaveformRendererPreroll;
 }
 
-class allshader::WaveformRendererPreroll final : public allshader::WaveformRenderer {
+class allshader::WaveformRendererPreroll final
+        : public allshader::WaveformRenderer,
+          public rendergraph::OpenGLNode {
   public:
-    explicit WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit WaveformRendererPreroll(
+            WaveformWidgetRenderer* waveformWidget,
+            ::WaveformRendererAbstract::PositionSource type =
+                    ::WaveformRendererAbstract::Play);
     ~WaveformRendererPreroll() override;
 
-    void setup(const QDomNode& node, const SkinContext& context) override;
+    void setup(const QDomNode& node, const SkinContext& skinContext) override;
     void paintGL() override;
     void initializeGL() override;
 
@@ -33,7 +40,9 @@ class allshader::WaveformRendererPreroll final : public allshader::WaveformRende
     QColor m_color;
     float m_markerBreadth{};
     float m_markerLength{};
-    std::unique_ptr<QOpenGLTexture> m_pTexture;
+    OpenGLTexture2D m_texture;
+
+    bool m_isSlipRenderer;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererPreroll);
 };

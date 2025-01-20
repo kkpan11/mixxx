@@ -2,6 +2,7 @@
 
 #include "moc_qmlconfigproxy.cpp"
 #include "preferences/colorpalettesettings.h"
+#include "preferences/constants.h"
 
 namespace {
 QVariantList paletteToQColorList(const ColorPalette& palette) {
@@ -11,6 +12,10 @@ QVariantList paletteToQColorList(const ColorPalette& palette) {
     }
     return colors;
 }
+
+const QString kPreferencesGroup = QStringLiteral("[Preferences]");
+const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
+
 } // namespace
 
 namespace mixxx {
@@ -29,6 +34,12 @@ QVariantList QmlConfigProxy::getHotcueColorPalette() {
 QVariantList QmlConfigProxy::getTrackColorPalette() {
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
     return paletteToQColorList(colorPaletteSettings.getTrackColorPalette());
+}
+
+int QmlConfigProxy::getMultiSamplingLevel() {
+    return static_cast<int>(m_pConfig->getValue(
+            ConfigKey(kPreferencesGroup, kMultiSamplingKey),
+            mixxx::preferences::MultiSamplingMode::Disabled));
 }
 
 // static

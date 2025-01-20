@@ -17,7 +17,7 @@ Item {
     property alias foreground: foreground.data
     property real min: 0
     property real max: 1
-    property real wheelStepSize: (root.max - root.min) / 10
+    property real wheelStepSize: (root.max - root.min) / 100
     property real angle: 130
     property bool arc: false
     property int arcStart: Knob.Center
@@ -67,8 +67,9 @@ Item {
         // by enabling multisampling, so we use 4xMSAA here.
         //
         // See https://www.qt.io/blog/2017/07/07/let-there-be-shapes for details.
-        layer.enabled: true
-        layer.samples: 4
+        property int multiSamplingLevel: Mixxx.Config.getMultiSamplingLevel()
+        layer.enabled: multiSamplingLevel > 1
+        layer.samples: multiSamplingLevel
 
         ShapePath {
             id: arcPath
